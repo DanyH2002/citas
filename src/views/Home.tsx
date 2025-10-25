@@ -1,17 +1,31 @@
 import React, { useState } from 'react'
 import { Pressable, Text, View, StyleSheet } from 'react-native'
 import Formulario from '../components/Formulario';
+import type { Paciente } from '../types/Paciente';
 
 export const Home = () => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [pacientes, setPacientes] = useState<Paciente[]>([]);
+    const [paciente, setPaciente] = useState<Paciente | null>(null);
 
     const cerrarModal = () => {
         setModalVisible(false)
     }
+
+    function pacienteEditar(id: string) {
+        const pacienteSeleccionado = pacientes?.filter(paciente => paciente.id === id)[0];
+        setPaciente(pacienteSeleccionado);
+    }
+
     return (
         <View style={styles.container}>
             <Text style={styles.titulo}> Administrador de Citas </Text>
             <Text style={styles.tituloBold}> Veterinaria </Text>
+            {pacientes.length === 0 ? (
+                <Text style={styles.noPacientes}> No hay pacientes aún </Text>
+            ) : (
+                <Text style={styles.listado}> Componente pendiente </Text>
+            )}
             <Pressable
                 style={styles.btnNuevaCita}
                 onPress={() => setModalVisible(true)}
@@ -20,7 +34,13 @@ export const Home = () => {
             </Pressable>
 
             {modalVisible && (
-                <Formulario cerrarModal={cerrarModal}></Formulario>
+                <Formulario
+                    cerrarModal={cerrarModal}
+                    pacientes={pacientes}
+                    setPacientes={setPacientes}
+                    paciente={paciente}
+                    setPaciente={setPaciente}
+                ></Formulario>
             )}
         </View>
     )
