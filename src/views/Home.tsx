@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
-import { Pressable, Text, View, StyleSheet } from 'react-native'
+import { Pressable, Text, View, StyleSheet, Modal, FlatList } from 'react-native'
 import Formulario from '../components/Formulario';
-import type { Paciente } from '../types/Paciente';
+import type { paciente } from '../types/Paciente';
+import InformacionPaciente from '../components/InformacionPaciente';
+import Paciente from '../components/Paciente';
 
 export const Home = () => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [pacientes, setPacientes] = useState<Paciente[]>([]);
-    const [paciente, setPaciente] = useState<Paciente | null>(null);
+    const [pacientes, setPacientes] = useState<paciente[]>([]);
+    const [paciente, setPaciente] = useState<paciente | null>(null);
+    const [modalPaciente, setModalPaciente] = useState(false);
 
     const cerrarModal = () => {
         setModalVisible(false)
@@ -24,7 +27,23 @@ export const Home = () => {
             {pacientes.length === 0 ? (
                 <Text style={styles.noPacientes}> No hay pacientes aún </Text>
             ) : (
-                <Text style={styles.listado}> Componente pendiente </Text>
+                <FlatList
+                    style={styles.listado}
+                    data={pacientes}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                        return (
+                            <Paciente
+                                item={item}
+                                setModalVisible={setModalVisible}
+                                setPaciente={setPaciente}
+                                setModalPaciente={setModalPaciente}
+                            >
+                            </Paciente>
+                        )
+                    }}
+                >
+                </FlatList>
             )}
             <Pressable
                 style={styles.btnNuevaCita}
@@ -42,6 +61,15 @@ export const Home = () => {
                     setPaciente={setPaciente}
                 ></Formulario>
             )}
+
+            <Modal visible={modalPaciente} animationType='slide'>
+                <InformacionPaciente
+                    paciente={paciente}
+                    setPaciente={setPaciente}
+                    setModalPaciente={setModalPaciente}
+                >
+                </InformacionPaciente>
+            </Modal>
         </View>
     )
 }

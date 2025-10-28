@@ -30,6 +30,7 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
             fecha: date,
         };
         setPacientes([nuevoPaciente, ...pacientes]);
+        setPaciente(nuevoPaciente);
 
         setNombrePaciente('');
         setPropietario('');

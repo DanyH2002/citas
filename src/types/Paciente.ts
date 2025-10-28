@@ -1,4 +1,4 @@
-export type Paciente = {
+export type paciente = {
     id: string;
     nombre: string;
     propietario: string;
@@ -9,8 +9,8 @@ export type Paciente = {
 
 export type FormularioProps = {
     cerrarModal: () => void;
-    pacientes: Paciente[];
-    paciente: Paciente | null;
-    setPacientes: React.Dispatch<React.SetStateAction<Paciente[]>>;
-    setPaciente: React.Dispatch<React.SetStateAction<Paciente | null>>;
+    pacientes: paciente[];
+    paciente: paciente | null;
+    setPacientes: React.Dispatch<React.SetStateAction<paciente[]>>;
+    setPaciente: React.Dispatch<React.SetStateAction<paciente | null>>;
 }
