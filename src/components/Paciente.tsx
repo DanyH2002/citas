@@ -3,21 +3,50 @@ import { View, StyleSheet, Pressable, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { formatearFecha } from '../helpers';
 
-
-export default function Paciente({ item, setModalVisible, setPaciente, setModalPaciente }: any) {
+export default function Paciente({ item, setModalVisible, setPaciente, setModalPaciente, pacientes, setPacientes }: any) {
     const { nombre, fecha, id } = item;
+
+    function eliminarPaciente(id: string) {
+        const paciente = pacientes.filter((p: any) => p.id !== id);
+        setPacientes(paciente);
+    }
     return (
-        <Pressable>
-            <View>
-                <Text>
+        <Pressable
+            onPress={() => {
+                setPaciente(item);
+                setModalPaciente(true)
+            }}
+        >
+            <View style={styles.contenedor}>
+                <Text style={styles.label}>
                     Paciente:
                 </Text>
-                <Text>
+                <Text style={styles.texto}>
                     {nombre}
                 </Text>
-                <Text>
+                <Text style={styles.fecha}>
                     {formatearFecha(fecha)}
                 </Text>
+
+                <View style={styles.contenedorBotones}>
+                    <Pressable style={[styles.btn, styles.btnEditar]}
+                        onPress={() => {
+                            setPaciente(item)
+                            setModalVisible(true)
+                        }}
+                    >
+                        <Text style={styles.btnTexto}>
+                            Editar
+                        </Text>
+                    </Pressable>
+                    <Pressable style={[styles.btn, styles.btnEliminar]}
+                        onLongPress={() => { eliminarPaciente(item.id) }}
+                    >
+                        <Text style={styles.btnTexto}>
+                            Eliminar
+                        </Text>
+                    </Pressable>
+                </View>
             </View>
         </Pressable>
     )

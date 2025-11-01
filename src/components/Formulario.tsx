@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, Pressable, ScrollView, Text, TextInput, View, StyleSheet, Button, Platform } from 'react-native'
 import DatePicker from '@react-native-community/datetimepicker'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FormularioProps } from '../types/Paciente';
+import { FormularioProps, paciente } from '../types/Paciente';
+import { formatearFecha } from '../helpers';
 
 export default function Formulario({ cerrarModal, pacientes, paciente, setPacientes, setPaciente }: FormularioProps) {
     const [nombrePaciente, setNombrePaciente] = useState('')
@@ -12,41 +13,66 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
 
     const [date, setDate] = useState(new Date())
     const [show, setShow] = useState(false)
-    // const onChange = (event: any, selectedDate?: Date) => {
-    //     const currentDate = selectedDate || date
-    //     setShow(Platform.OS === 'ios')
-    //     setDate(currentDate)
-    // }
 
     const insets = useSafeAreaInsets();
 
     function handleCita() {
-        const nuevoPaciente = {
-            id: Date.now().toString(),
-            nombre: nombrePaciente,
-            propietario,
-            email,
-            telefono,
-            fecha: date,
-        };
-        setPacientes([nuevoPaciente, ...pacientes]);
-        setPaciente(nuevoPaciente);
+        if ([nombrePaciente, propietario, email, telefono].includes('')) {
+            alert('Todos los campos son obligatorios');
+            return;
+        }
 
+        if (paciente?.id) {
+            const pacienteActualizado = pacientes.map(
+                p => p.id === paciente.id ? {
+                    ...p, nombre: nombrePaciente, propietario, email, telefono, fecha: date
+                } : p
+            )
+            setPacientes(pacienteActualizado);
+        } else {
+            const nuevoPaciente = {
+                id: Date.now().toString(),
+                nombre: nombrePaciente,
+                propietario,
+                email,
+                telefono,
+                fecha: date,
+            };
+            setPacientes([nuevoPaciente, ...pacientes]);
+        }
+        limpiarFormulario();
+        cerrarModal()
+    }
+
+    useEffect(() => {
+        if (paciente?.id) {
+            setNombrePaciente(paciente.nombre);
+            setPropietario(paciente.propietario);
+            setEmail(paciente.email);
+            setTelefono(paciente.telefono);
+            setDate(new Date(paciente.fecha));
+        }
+    }, [paciente])
+
+    function limpiarFormulario() {
         setNombrePaciente('');
         setPropietario('');
         setEmail('');
         setTelefono('');
         setDate(new Date());
-
-        cerrarModal()
+        setPaciente({} as any);
     }
 
     return (
         <Modal animationType='slide' visible={true}>
             <ScrollView style={[styles.contenido, { padding: insets.top }]}>
-                <Text style={styles.titulo}>Nueva Cita</Text>
+                <Text style={styles.titulo}>{paciente?.id ? 'Editar Cita' : 'Nueva Cita'}</Text>
                 <Pressable
-                    onPress={() => cerrarModal()}
+                    onPress={() => {
+                        limpiarFormulario(),
+                        cerrarModal()
+                    }
+                    }
                     style={styles.btnCancelar}>
                     <Text style={styles.btnCancelarTexto}>Cancelar</Text>
                 </Pressable>
@@ -74,6 +100,7 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                         placeholder='Email del Propietario'
                         placeholderTextColor={'#666'}
                         value={email}
+                        keyboardType='email-address'
                         onChangeText={setEmail}
                     ></TextInput>
                 </View>
@@ -83,6 +110,7 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                         placeholder='Telefono del Propietario'
                         placeholderTextColor={'#666'}
                         value={telefono}
+                        keyboardType='phone-pad'
                         onChangeText={setTelefono}
                     ></TextInput>
                 </View>
@@ -109,10 +137,9 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                             <>
                                 <Pressable style={styles.btnFecha} onPress={() => setShow(true)}>
                                     <Text style={styles.btnFechaTexto}>
-                                        Seleccionar Fecha
+                                        Seleccionar Fecha: {(date).toLocaleDateString()}
                                     </Text>
                                 </Pressable>
-
                                 {show && (
                                     <DatePicker
                                         value={date}
@@ -131,10 +158,9 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                             <>
                                 <Pressable style={styles.btnFecha} onPress={() => setShow(true)}>
                                     <Text style={styles.btnFechaTexto}>
-                                        Seleccionar Fecha
+                                        Seleccionar Fecha: {(date).toLocaleDateString()}
                                     </Text>
                                 </Pressable>
-
                                 {show && (
                                     <View style={styles.pickerContainer}>
                                         <DatePicker
@@ -161,7 +187,7 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                     style={styles.btnNuevaCita}
                     onPress={handleCita}
                 >
-                    <Text style={styles.btnNuevaCitaTexto}>Guardar Cita</Text>
+                    <Text style={styles.btnNuevaCitaTexto}>{paciente?.id ? 'Actualizar Cita' : 'Guardar Cita'}</Text>
                 </Pressable>
             </ScrollView>
         </Modal>
@@ -218,9 +244,6 @@ const styles = StyleSheet.create({
         height: 100
     },
     fechaContenedor: {
-        // borderRadius: 10,
-        // color: '#FFF',
-        // backgroundColor: '#FFF',
         marginHorizontal: 10,
         marginTop: 10,
         backgroundColor: '#FFF',
@@ -275,10 +298,10 @@ const styles = StyleSheet.create({
     pickerContainer: {
         marginTop: 5,
         borderRadius: 10,
-        backgroundColor: '#FFF',
-        overflow: 'hidden'
+        backgroundColor: '#FFF',   
+        // overflow: 'hidden',
     },
     datePicker: {
         width: '100%',
-    },
+    }
 })

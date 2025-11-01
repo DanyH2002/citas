@@ -38,6 +38,8 @@ export const Home = () => {
                                 setModalVisible={setModalVisible}
                                 setPaciente={setPaciente}
                                 setModalPaciente={setModalPaciente}
+                                pacientes={pacientes}
+                                setPacientes={setPacientes}
                             >
                             </Paciente>
                         )
