@@ -3,13 +3,14 @@ import { View, StyleSheet, Pressable, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { formatearFecha } from '../helpers';
 
-export default function Paciente({ item, setModalVisible, setPaciente, setModalPaciente, pacientes, setPacientes }: any) {
+export default function Paciente({ 
+    item, 
+    setModalVisible, 
+    setPaciente, 
+    setModalPaciente, 
+    pacienteEliminar }: any) {
     const { nombre, fecha, id } = item;
 
-    function eliminarPaciente(id: string) {
-        const paciente = pacientes.filter((p: any) => p.id !== id);
-        setPacientes(paciente);
-    }
     return (
         <Pressable
             onPress={() => {
@@ -40,7 +41,7 @@ export default function Paciente({ item, setModalVisible, setPaciente, setModalP
                         </Text>
                     </Pressable>
                     <Pressable style={[styles.btn, styles.btnEliminar]}
-                        onLongPress={() => { eliminarPaciente(item.id) }}
+                        onLongPress={() => { pacienteEliminar(id) }}
                     >
                         <Text style={styles.btnTexto}>
                             Eliminar

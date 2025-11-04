@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Pressable, Text, View, StyleSheet, Modal, FlatList } from 'react-native'
+import { Pressable, Text, View, StyleSheet, Modal, FlatList, Alert } from 'react-native'
 import Formulario from '../components/Formulario';
 import type { paciente } from '../types/Paciente';
 import InformacionPaciente from '../components/InformacionPaciente';
@@ -18,6 +18,25 @@ export const Home = () => {
     function pacienteEditar(id: string) {
         const pacienteSeleccionado = pacientes?.filter(paciente => paciente.id === id)[0];
         setPaciente(pacienteSeleccionado);
+    }
+
+    function pacienteEliminar(id: string) {
+        Alert.alert(
+            '¿Seguro de eliminar el paciente?',
+            'Esto no es reversible',
+            [
+                {
+                    text: 'Cancelar'
+                },
+                {
+                    text: 'Si, eliminar',
+                    onPress: () => {
+                        const paciente = pacientes.filter((p: any) => p.id !== id);
+                        setPacientes(paciente);
+                    }
+                }
+            ]
+        )
     }
 
     return (
@@ -40,6 +59,7 @@ export const Home = () => {
                                 setModalPaciente={setModalPaciente}
                                 pacientes={pacientes}
                                 setPacientes={setPacientes}
+                                pacienteEliminar={pacienteEliminar}
                             >
                             </Paciente>
                         )
@@ -89,7 +109,7 @@ const styles = StyleSheet.create({
     },
     tituloBold: {
         fontWeight: '900',
-        color: '#6D28D9',
+        color: '#6D28D9'
     },
     btnNuevaCita: {
         backgroundColor: '#6D28D9',

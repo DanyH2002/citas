@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Pressable, ScrollView, Text, TextInput, View, StyleSheet, Button, Platform } from 'react-native'
+import { Modal, Pressable, ScrollView, Text, TextInput, View, StyleSheet, Alert, Platform } from 'react-native'
 import DatePicker from '@react-native-community/datetimepicker'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FormularioProps, paciente } from '../types/Paciente';
-import { formatearFecha } from '../helpers';
 
 export default function Formulario({ cerrarModal, pacientes, paciente, setPacientes, setPaciente }: FormularioProps) {
     const [nombrePaciente, setNombrePaciente] = useState('')
@@ -18,17 +17,29 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
 
     function handleCita() {
         if ([nombrePaciente, propietario, email, telefono].includes('')) {
-            alert('Todos los campos son obligatorios');
+            Alert.alert('Todos los campos son obligatorios');
             return;
         }
 
-        if (paciente?.id) {
-            const pacienteActualizado = pacientes.map(
-                p => p.id === paciente.id ? {
-                    ...p, nombre: nombrePaciente, propietario, email, telefono, fecha: date
-                } : p
+        if (paciente?.id) { 
+            Alert.alert(
+                '¿Deseas actualizar la cita?',
+                'Estos cambios se tomaran en cuenta para el servicio',
+                [
+                    { text: 'Cancelar' },
+                    {
+                        text: 'Si, actualizar datos',
+                        onPress: () => {
+                            const pacienteActualizado = pacientes.map(
+                                p => p.id === paciente.id ? {
+                                    ...p, nombre: nombrePaciente, propietario, email, telefono, fecha: date
+                                } : p
+                            )
+                            setPacientes(pacienteActualizado);
+                        }
+                    }
+                ]
             )
-            setPacientes(pacienteActualizado);
         } else {
             const nuevoPaciente = {
                 id: Date.now().toString(),
@@ -70,7 +81,7 @@ export default function Formulario({ cerrarModal, pacientes, paciente, setPacien
                 <Pressable
                     onPress={() => {
                         limpiarFormulario(),
-                        cerrarModal()
+                            cerrarModal()
                     }
                     }
                     style={styles.btnCancelar}>
@@ -298,7 +309,7 @@ const styles = StyleSheet.create({
     pickerContainer: {
         marginTop: 5,
         borderRadius: 10,
-        backgroundColor: '#FFF',   
+        backgroundColor: '#FFF',
         // overflow: 'hidden',
     },
     datePicker: {
